@@ -20,6 +20,7 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
+          cache: maven
 
       - name: Verify Maven
         run: mvn -version
@@ -36,30 +37,38 @@ jobs:
       - name: Install API Dependencies
         run: |
           cd user-api
-          npm ci
+          npm install
 
       - name: Start API Server
         run: |
           cd user-api
           nohup node server.js &
+          sleep 5
 
       - name: Wait for API to Start
         run: |
           echo "Checking API..."
           for i in {1..30}; do
-            if curl -s http://localhost:3000 > /dev/null; then
+            if curl -s http://localhost:3000/api/users/count > /dev/null; then
               echo "API is running"
-              break
+              exit 0
             fi
             echo "Waiting for API..."
             sleep 5
           done
+          echo "API failed to start"
+          exit 1
 
       - name: Run API Automation Tests
         run: mvn clean test
 
       - name: Generate Allure Report
-        run: mvn allure:report
+        run: |
+          if [ -d "target/allure-results" ]; then
+            mvn allure:report
+          else
+            echo "Allure results not found"
+          fi
 
       - name: Deploy Allure Report to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
@@ -85,9 +94,9 @@ jobs:
             <h2 style="color:#2ea44f;">✅ API Automation Testing Completed</h2>
 
             <p><b>Repository:</b> user-restAssured</p>
-            <p><b>Execution:</b> Scheduled Daily Run (3 PM)</p>
+            <p><b>Execution:</b> Scheduled Daily Run (3 PM IST)</p>
 
-            <table style="border-collapse:collapse;width:400px">
+            <table style="border-collapse:collapse;width:420px">
               <tr style="background:#24292e;color:white">
                 <th style="padding:8px;border:1px solid #ddd">Metric</th>
                 <th style="padding:8px;border:1px solid #ddd">Result</th>
@@ -98,7 +107,7 @@ jobs:
               </tr>
               <tr>
                 <td style="padding:8px;border:1px solid #ddd">Failures</td>
-                <td style="padding:8px;border:1px solid #ddd;color:#d73a49">0</td>
+                <td style="padding:8px;border:1px solid #ddd;color:#2ea44f">0</td>
               </tr>
               <tr>
                 <td style="padding:8px;border:1px solid #ddd">Errors</td>
@@ -119,6 +128,8 @@ jobs:
 
             <br><br>
 
-            <p>Generated automatically by GitHub CI/CD</p>
+            <p style="color:gray;font-size:12px">
+            Generated automatically by GitHub Actions CI/CD
+            </p>
 
             </div>
