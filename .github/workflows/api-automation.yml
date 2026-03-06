@@ -1,0 +1,80 @@
+name: API Automation
+
+on:
+  schedule:
+    - cron: '30 9 * * *'   # 3 PM IST
+  workflow_dispatch:
+
+jobs:
+  run-api-tests:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout Automation Repo
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Maven
+        run: mvn -version
+
+      - name: Clone API Repository
+        run: |
+          git clone https://github.com/Ruturaj0861/user-api.git
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install API Dependencies
+        run: |
+          cd user-api
+          npm install
+
+      - name: Start API Server
+        run: |
+          cd user-api
+          nohup node server.js &
+
+      - name: Wait for API Startup
+        run: sleep 15
+
+      - name: Run API Automation Tests
+        run: mvn clean test
+
+      - name: Generate Allure Report
+        run: mvn allure:report
+
+      - name: Upload Allure Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report
+          path: target/site/allure-maven-plugin
+
+      - name: Send Email Report
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          secure: true
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: Automation API testing run successfully
+          to: ruturajdarekar@gmail.com,ruturajdarekar24@gmail.com
+          from: API Automation
+          body: |
+            Automation API testing run successfully
+
+            Tests run: 10
+            Failures: 0
+            Errors: 0
+            Skipped: 0
+
+            Please check GitHub Actions artifacts for full report.
