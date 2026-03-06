@@ -2,7 +2,7 @@ name: API Automation
 
 on:
   schedule:
-    - cron: '30 9 * * *'
+    - cron: '30 9 * * *'   # 3 PM IST
   workflow_dispatch:
 
 jobs:
@@ -21,53 +21,52 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
+      - name: Verify Maven
+        run: mvn -version
 
       - name: Clone API Repository
         run: |
           git clone https://github.com/Ruturaj0861/user-api.git
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
       - name: Install API Dependencies
         run: |
           cd user-api
-          npm install
+          npm ci
 
       - name: Start API Server
         run: |
           cd user-api
-          node server.js > server.log 2>&1 &
-          echo "Server started"
+          nohup node server.js &
 
-      - name: Wait for API
+      - name: Wait for API to Start
         run: |
           echo "Checking API..."
           for i in {1..30}; do
-            if curl -s http://localhost:3000/api/users > /dev/null; then
+            if curl -s http://localhost:3000 > /dev/null; then
               echo "API is running"
-              exit 0
+              break
             fi
             echo "Waiting for API..."
-            sleep 2
+            sleep 5
           done
 
-          echo "API failed to start"
-          cat user-api/server.log
-          exit 1
-
-      - name: Run API Tests
+      - name: Run API Automation Tests
         run: mvn clean test
 
       - name: Generate Allure Report
         run: mvn allure:report
 
-      - name: Upload Allure Report
-        uses: actions/upload-artifact@v4
+      - name: Deploy Allure Report to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          name: allure-report
-          path: target/site/allure-maven-plugin
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./target/site/allure-maven-plugin
+          publish_branch: gh-pages
 
       - name: Send Email Report
         uses: dawidd6/action-send-mail@v3
@@ -79,15 +78,15 @@ jobs:
           password: ${{ secrets.EMAIL_PASSWORD }}
           subject: 🚀 API Automation Test Execution - SUCCESS
           to: ruturajdarekar@gmail.com,ruturajdarekar24@gmail.com
-          from: Ruturaj Automation CI
+          from: API Automation CI
           html_body: |
             <div style="font-family:Arial;padding:20px;background:#f6f8fa">
-            
+
             <h2 style="color:#2ea44f;">✅ API Automation Testing Completed</h2>
-            
+
             <p><b>Repository:</b> user-restAssured</p>
-            <p><b>Execution Time:</b> Daily Scheduled Run</p>
-            
+            <p><b>Execution:</b> Scheduled Daily Run (3 PM)</p>
+
             <table style="border-collapse:collapse;width:400px">
               <tr style="background:#24292e;color:white">
                 <th style="padding:8px;border:1px solid #ddd">Metric</th>
@@ -110,22 +109,16 @@ jobs:
                 <td style="padding:8px;border:1px solid #ddd">0</td>
               </tr>
             </table>
-            
+
             <br>
-            
-            <a href="https://github.com/Ruturaj0861/user-restAssured/actions"
+
+            <a href="https://ruturaj0861.github.io/user-restAssured/"
             style="background:#0366d6;color:white;padding:12px 20px;text-decoration:none;border-radius:6px;">
-            View Full Execution
+            📊 Open Live Test Report
             </a>
-            
+
             <br><br>
-            
-            <p>📊 Download Allure Report from GitHub Actions Artifacts.</p>
-            
-            <hr>
-            
-            <p style="color:gray;font-size:12px">
-            Generated automatically by GitHub Actions CI/CD
-            </p>
-            
+
+            <p>Generated automatically by GitHub CI/CD</p>
+
             </div>
