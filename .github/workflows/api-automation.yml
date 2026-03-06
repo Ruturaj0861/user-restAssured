@@ -87,7 +87,7 @@ jobs:
           password: ${{ secrets.EMAIL_PASSWORD }}
           subject: 🚀 API Automation Test Execution - SUCCESS
           to: ruturajdarekar@gmail.com,ruturajdarekar24@gmail.com
-          from: API Automation CI
+          from: "QA Automation CI Bot <noreply@automation-ci.local>"
           html_body: |
             <div style="font-family:Arial;padding:20px;background:#f6f8fa">
 
@@ -129,7 +129,7 @@ jobs:
             <br><br>
 
             <p style="color:gray;font-size:12px">
-            Generated automatically by GitHub Actions CI/CD
+            This is an automated system email. Please do not reply.
             </p>
 
             </div>
