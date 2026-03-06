@@ -18,10 +18,10 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
+          distribution: temurin
           java-version: '17'
 
-      - name: Setup Maven
+      - name: Verify Maven
         run: mvn -version
 
       - name: Clone API Repository
@@ -41,10 +41,19 @@ jobs:
       - name: Start API Server
         run: |
           cd user-api
-          nohup node server.js &
+          nohup node server.js > server.log 2>&1 &
 
-      - name: Wait for API Startup
-        run: sleep 15
+      - name: Wait for API to be ready
+        run: |
+          echo "Waiting for API server..."
+          for i in {1..30}; do
+            if curl -s http://localhost:3000 > /dev/null; then
+              echo "API started successfully"
+              break
+            fi
+            echo "API not ready yet..."
+            sleep 2
+          done
 
       - name: Run API Automation Tests
         run: mvn clean test
@@ -70,7 +79,7 @@ jobs:
           to: ruturajdarekar@gmail.com,ruturajdarekar24@gmail.com
           from: API Automation
           body: |
-            Automation API testing run successfully
+            Automation API testing run successfully.
 
             Tests run: 10
             Failures: 0
