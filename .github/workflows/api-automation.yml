@@ -86,7 +86,7 @@ jobs:
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
           subject: 🚀 API Automation Test Execution - SUCCESS
-          to: ruturajdarekar@gmail.com,ruturajdarekar24@gmail.com
+          to: ruturaj.ppr24@gmail.com
           from: "QA Automation CI Bot <noreply@automation-ci.local>"
           html_body: |
             <div style="font-family:Arial;padding:20px;background:#f6f8fa">
