@@ -69,7 +69,7 @@ jobs:
           name: allure-report
           path: target/site/allure-maven-plugin
 
-      - name: Send Email
+      - name: Send Email Report
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: smtp.gmail.com
@@ -77,15 +77,55 @@ jobs:
           secure: true
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
-          subject: Automation API testing run successfully
+          subject: 🚀 API Automation Test Execution - SUCCESS
           to: ruturajdarekar@gmail.com,ruturajdarekar24@gmail.com
-          from: API Automation
-          body: |
-            Automation API testing run successfully.
-
-            Tests run: 10
-            Failures: 0
-            Errors: 0
-            Skipped: 0
-
-            Please check GitHub Actions artifacts for full report.
+          from: Ruturaj Automation CI
+          html_body: |
+            <div style="font-family:Arial;padding:20px;background:#f6f8fa">
+            
+            <h2 style="color:#2ea44f;">✅ API Automation Testing Completed</h2>
+            
+            <p><b>Repository:</b> user-restAssured</p>
+            <p><b>Execution Time:</b> Daily Scheduled Run</p>
+            
+            <table style="border-collapse:collapse;width:400px">
+              <tr style="background:#24292e;color:white">
+                <th style="padding:8px;border:1px solid #ddd">Metric</th>
+                <th style="padding:8px;border:1px solid #ddd">Result</th>
+              </tr>
+              <tr>
+                <td style="padding:8px;border:1px solid #ddd">Tests Run</td>
+                <td style="padding:8px;border:1px solid #ddd">10</td>
+              </tr>
+              <tr>
+                <td style="padding:8px;border:1px solid #ddd">Failures</td>
+                <td style="padding:8px;border:1px solid #ddd;color:#d73a49">0</td>
+              </tr>
+              <tr>
+                <td style="padding:8px;border:1px solid #ddd">Errors</td>
+                <td style="padding:8px;border:1px solid #ddd">0</td>
+              </tr>
+              <tr>
+                <td style="padding:8px;border:1px solid #ddd">Skipped</td>
+                <td style="padding:8px;border:1px solid #ddd">0</td>
+              </tr>
+            </table>
+            
+            <br>
+            
+            <a href="https://github.com/Ruturaj0861/user-restAssured/actions"
+            style="background:#0366d6;color:white;padding:12px 20px;text-decoration:none;border-radius:6px;">
+            View Full Execution
+            </a>
+            
+            <br><br>
+            
+            <p>📊 Download Allure Report from GitHub Actions Artifacts.</p>
+            
+            <hr>
+            
+            <p style="color:gray;font-size:12px">
+            Generated automatically by GitHub Actions CI/CD
+            </p>
+            
+            </div>
