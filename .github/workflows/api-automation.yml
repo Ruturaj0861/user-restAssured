@@ -2,7 +2,7 @@ name: API Automation
 
 on:
   schedule:
-    - cron: '30 9 * * *'   # 3 PM IST
+    - cron: '30 21 * * *'   # 3 AM IST
   workflow_dispatch:
 
 jobs:
@@ -94,7 +94,7 @@ jobs:
             <h2 style="color:#2ea44f;">✅ API Automation Testing Completed</h2>
 
             <p><b>Repository:</b> user-restAssured</p>
-            <p><b>Execution:</b> Scheduled Daily Run (3 PM IST)</p>
+            <p><b>Execution:</b> Scheduled Daily Run (3 AM IST)</p>
 
             <table style="border-collapse:collapse;width:420px">
               <tr style="background:#24292e;color:white">
